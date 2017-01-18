@@ -9,3 +9,5 @@ class Time{ int hrs, mins, secs ;
                  tot_secs = (hrs * 6) + (mins * 60) + secs ;
                  strcpy(suf,"Hrs");
             }
+            void puttime(void)
+            {    cout<<"Time is:"
