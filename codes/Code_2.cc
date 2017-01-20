@@ -1,4 +1,4 @@
-include <stdio.h>
+#include <stdio.h>
 
 /* Search number in an array using binary search algorithm */
 
