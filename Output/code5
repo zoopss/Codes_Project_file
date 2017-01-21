@@ -1,0 +1,12 @@
+How many elements do you want to create array with ?(max .50)...5
+
+Enter array elements...
+9  7  4  6  1  
+Array after iteration-1- is : 7 4 6 1 9
+Array after iteration-2- is : 4 6 1 7 9
+Array after iteration-3- is : 4 1 6 7 9
+Array after iteration-4- is : 1 4 6 7 9
+Array after iteration-5- is : 1 4 6 7 9
+
+The sorted array is as shown below...
+1   4   6   7   9
