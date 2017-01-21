@@ -22,9 +22,43 @@ int main()
        newptr = Create_New_Node(inf);
        if (newptr != NULL)
        {
-           cout<<"\n\nNew Node created Successfully. Pres  enter ro contineu.....";
+           cout<<"\n\nNew Node created Successfully. Pres  enter to contineu.....";
            system("pause");
        }
        else 
        {
-           cout
+           cout<<"\nCAnnot create new new node!!! Aborting!!\n";
+           system("paused");
+           exit(1);
+       }
+       cout<<"\n\nNow inserting this node in the begning of list ...\n";
+       cout<<"Press  enter to contineu...\n";
+       system("pause");
+       Insert_Beg(newptr);
+       cout<<"\nNow the list is :\n";
+       Display(start);
+       cout<<"\n Press Y to enter more nodes, N to exit....\n";
+       cin>>ch;
+     }
+     Node * Create_New_Node( int n)
+     {ptr = new Node;
+      ptr -> info = n;
+      ptr -> next = NULL;
+      return ptr;
+     }
+     Void Insert_Beg(Node*np)
+     {  if (start == NUll)
+           start = np;
+        else
+        { save= start;
+          start= np;
+          np -> next = save ;
+        }
+     }
+     Void Display(NOde*np)
+     {  while(np != NULL)
+        {  cout<< np -> info<<"->";
+           np = np -> next ;
+        }
+        cout<< "!!!\n";
+     }
