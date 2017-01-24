@@ -5,15 +5,15 @@ using namespace std;
 int main()
 {
     int a[50],n,x,i,pos=0;
-    cout<<"Enter size of array:";
+    cout<<"How many elements do you want to create array with(Max. 50)....";
     cin>>n;
-    cout<<"Enter the array in ascending order:\n";
+    cout<<"Enter the array elements(Must be sorted in ascending order)\n";
     
     for(i=0;i<n;++i)
         cin>>a[i];
     char ch = 'y';
     while(ch =='y'||ch =='Y')
-    {  cout<<"\nEnter element to insert:";
+    {  cout<<"\nEnter element to be inserted...";
        cin>>x;
      
        for(i=0;i<n;++i)
@@ -31,7 +31,7 @@ int main()
        cin>>ch;
     }
     
-    cout<<"\n\nArray after inserting element:\n";
+    cout<<"\n\n The Array is now as shown below...\n";
     
     for(i=0;i<n+1;i++)
         cout<<a[i]<<" ";
