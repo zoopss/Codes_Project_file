@@ -1,9 +1,9 @@
 #include<iostream.h>
 #include<process.h>
-struct Node      {
-                              int info;
- 	              Node * next ;
-                         }    *start, *newptr, *save, *ptr ;
+struct Node    {
+                  int info;
+ 	                Node * next ;
+               }  *start, *newptr, *save, *ptr ;
 Node * Create_New_Node( int );
 void Insert_Beg( Node*b);
 void Display( Node*);
