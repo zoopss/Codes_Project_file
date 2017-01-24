@@ -1,0 +1,21 @@
+How many elements of Array you want to create?10
+
+Enter elements of Array
+1
+4
+9
+12
+14
+66
+88
+44
+99
+100
+
+Enter element to delete:100
+Wnat to Delete more elements(y/n)?...y
+
+Enter element to delete:9
+Wnat to Delete more elements(y/n)?...n
+
+New Array is 1 4 12 14 66 88 44 99 
