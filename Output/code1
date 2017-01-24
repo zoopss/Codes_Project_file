@@ -1,0 +1,18 @@
+How many elements do you want to create array with(Max. 50)....6
+Enter the array elements(Must be sorted in ascending order)
+2
+6
+9
+10
+12
+15
+
+Enter element to be inserted...11
+Want to insert more element? (y/n)...y
+
+Enter element to be inserted...4
+Want to insert more element? (y/n)...n
+
+
+ The Array is now as shown below...
+2 4 6 9 10 11 12 15
