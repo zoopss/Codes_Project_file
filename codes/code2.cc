@@ -6,22 +6,22 @@ int main()
 {
     int search(int [],int,int);
     int n,i,a[100],e,res;
-    cout<<"How Many Elements:";
+    cout<<"Enter desired Array sixe(Max. 50)....";
     cin>>n;
-    cout<<"\nEnter Elements of Array in Ascending order\n";
+    cout<<"\nEnter Elements of Array(Musb be sorted in Ascending order)\n";
     
     for(i=0;i<n;++i)
     {
         cin>>a[i];
     }
     
-    cout<<"\nEnter element to search:";
+    cout<<"\nEnter element to be searched for...";
     cin>>e;
     
     res=search(a,n,e);
     
     if(res!=-1)
-        cout<<"\nElement found at position "<<res+1;
+        cout<<"\nElement found at position: "<<res+1;
     else
         cout<<"\nElement is not found....!!!";
  
