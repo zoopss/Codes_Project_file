@@ -1,0 +1,11 @@
+Enter a string (Max. 80 mcharacters).
+my world
+Enter a character to be searched for
+o
+orld
+
+Enter a string (Max. 80 characters).
+my world
+Enter a character to searched for 
+c
+NO match found !
