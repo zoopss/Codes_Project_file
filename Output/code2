@@ -1,0 +1,14 @@
+Enter desired Array sixe(Max. 50)....7
+
+Enter Elements of Array(Musb be sorted in Ascending order)
+2
+5
+7
+8
+9
+10
+15
+
+Enter element to be searched for...8
+
+Element found at position: 4
