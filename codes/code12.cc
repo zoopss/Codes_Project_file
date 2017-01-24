@@ -2,7 +2,7 @@
  * C++ Program to Implement Circular Queue
  */
 #include <iostream>
-#define MAX 5
+#define MAX 50
 using namespace std;
 /*
  * Class Circular Queue
@@ -52,7 +52,7 @@ class Circular_Queue
                 cout<<"Queue Underflow\n";
                 return ;
             }
-            cout<<"Element deleted from queue is : "<<cqueue_arr[front]<<endl;
+            cout<<"Element deleted is : "<<cqueue_arr[front]<<endl;
             if (front == rear)
             {
                 front = -1;
@@ -77,7 +77,8 @@ class Circular_Queue
                 cout<<"Queue is empty\n";
                 return;
             }
-            cout<<"Queue elements :\n";
+            cout<<"Circular Queue is \n";
+            cout<<"(Front shown as >>> and rear 
             if (front_pos <= rear_pos)
             {
                 while (front_pos <= rear_pos)
@@ -112,16 +113,17 @@ int main()
     Circular_Queue cq;
     do
     {
+	cout<<"Circular Queue Menu\n"
         cout<<"1.Insert\n";
         cout<<"2.Delete\n";
         cout<<"3.Display\n";
         cout<<"4.Quit\n";
-        cout<<"Enter your choice : ";
+        cout<<"Enter your choice(1-4).... ";
         cin>>choice;
         switch(choice)
         {
         case 1:
-            cout<<"Input the element for insertion in queue : ";
+            cout<<"Enter item for insertion.... ";
             cin>>item;	
             cq.insert(item);
 	    break;
