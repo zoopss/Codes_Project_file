@@ -3,14 +3,14 @@
 struct Node    {
                   int info;
  	                Node * next ;
-               }  *start, *newptr, *save, *ptr ;
+               }  *start, *newptr, *save, *ptr, *rear ;
 Node * Create_New_Node( int );
-void Insert_Beg( Node*b);
+void Insert_Beg( Node*);
 void Display( Node*);
 
 int main()
 {
-     start = NULL;
+     start = rear = NULL;
      int inf; char ch = 'y';
      while (ch == 'y' | | ch == 'Y')
      {
@@ -31,11 +31,10 @@ int main()
            system("paused");
            exit(1);
        }
-       cout<<"\n\nNow inserting this node in the begning of list ...\n";
        cout<<"Press  enter to contineu...\n";
        system("pause");
        Insert_Beg(newptr);
-       cout<<"\nNow the list is :\n";
+       cout<<"\nNow the quueue(Front...to...Rear) is :\n";
        Display(start);
        cout<<"\n Press Y to enter more nodes, N to exit....\n";
        cin>>ch;
