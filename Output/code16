@@ -1,0 +1,43 @@
+Circular Queue Menu
+1.Insert
+2.Delete
+3.Display
+4.Quit
+Enter your choice (1-4)..... 1
+Enter the element for insertion in queue..... 5
+Circular Queue Menu
+1.Insert
+2.Delete
+3.Display
+4.Quit
+Enter your choice (1-4)..... 1
+Enter the element for insertion in queue..... 9
+Circular Queue Menu
+1.Insert
+2.Delete
+3.Display
+4.Quit
+Enter your choice (1-4)..... 1
+Enter the element for insertion in queue..... 6
+Circular Queue Menu
+1.Insert
+2.Delete
+3.Display
+4.Quit
+Enter your choice (1-4)..... 3
+Elements in queue are...
+5  9  6  
+Circular Queue Menu
+1.Insert
+2.Delete
+3.Display
+4.Quit
+Enter your choice (1-4)..... 2
+Element deleted is.... 5
+Circular Queue Menu
+1.Insert
+2.Delete
+3.Display
+4.Quit
+Enter your choice (1-4)..... 4
+ 
