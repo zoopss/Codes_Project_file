@@ -20,4 +20,13 @@ int main()
     cout<<"File cant be opened \n";
     return 1;
   }
-  fout.write
+  fout.write((char*)& savac, sizedof(customer));
+  fout.close()
+  ifstream fin;
+  fin.open("Saving",ios::in|ios::binary);
+  fin.read((char*)& savac, sizedof(customer));
+  cout<<savac.name;
+  cout<<"has the balance amount of Rss. "<<savac.balance<<"\n";
+  fin.close();
+  return ;
+}
