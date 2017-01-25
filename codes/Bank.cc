@@ -1392,3 +1392,302 @@ int initial::recordno(int t_accno)
 
 /* Function for updating the balance for the given account no.*/
 		
+void initial::update_balance(int t_accno,char t_name[30],char t_address[30],float t_balance)
+{
+    int recno;
+    recno = recordno(t_accno);
+    fstream file;
+    file.open("INITIAL.dat", ios::out|ios::ate);
+    strcpy(name, t_name);
+    strcpy(address, t_address);
+    balance = t_balance;
+    int location;
+    location = (recno-1) * sizeof(initial); // Find the location in file
+    file.seekp(location);   // Searches the insertion position in data file
+    // Updates the balance amount in INITIAL.dat data file
+    file.write((char *)this, sizeof(initial));
+    file.close();
+}
+
+/* Function to return no. days between two dates. */
+int account::no_of_days(int d1, int m1, int y1, int d2, int m2, int y2)
+{
+    static int month[] = {31, 28, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30};
+    int days = 0;
+   while (d1 != d2 || m1 != m2 || y1 != y2)
+    {
+     days++;
+     d1++;
+     if (d1 > month[m1-1])
+     {
+      d1 = 1;
+      m1++;
+      }
+     if (m1 > m2)
+     {
+      m1 = 1;
+      y1++;
+      }
+     }
+    return days;
+}
+
+/* Function for calculates interest */
+float account::calculate_interest(int t_accno, float t_balance)
+{
+    fstream file;
+    file.open("BANKING.dat", ios::in);
+    file.seekg(0, ios::beg);
+    int d1, m1, y1, days;
+    while (file.read((char *)this, sizeof(account)))
+    {
+     if (accno == t_accno)
+     {
+      d1 = dd;
+      m1 = mm;
+      y1 = yy;
+      break;
+      }
+     }
+    int d2, m2, y2;
+    struct date d;
+    getdate(&d);
+    d2 = d.da_day;
+    m2 = d.da_mon;
+    y2 = d.da_year;
+    float t_interest = 0.0;
+    if((y2 < y1) || (y2==y1 && m2 < m1) || (y2==y1 && m2 == m1) && (d2 < d1))
+    return t_interest;
+    days = no_of_days(d1, m1, y1, d2, m2, y2);
+    int months = 0;
+    if (days > 30)
+    {
+     months = days / 30;
+     t_interest = ((t_balance*2)/100 * months);
+     }
+    file.close();
+    return t_interest;
+}
+
+/* Function for making daily transaction (Deposit 'D'/Withdraw 'W'. */
+void account::transaction(void)
+{
+    clrscr();
+    char t_acc[10];
+    int t, t_accno, valid;
+    gotoxy(71,1);
+    cout << "<0>=Exit";
+    gotoxy(5, 5);
+    cout << "Enter the account no. ";
+    gets(t_acc);
+    t = atoi(t_acc);
+    t_accno = t;
+    if (t_accno == 0)
+    return;
+    clrscr();
+    initial ini;
+    if (!ini.found_account(t_accno))
+    {
+     gotoxy(5, 5);
+     cout << "\7Account not found";
+     getch();
+     return;
+     }
+    gotoxy(71, 1);
+    cout << "<0>=Exit";
+    gotoxy(3, 3);
+    for (int i = 1; i <= 76; i++)
+    cprintf(" ");
+    textbackground(BLACK);
+    textcolor(BLACK+BLINK);
+    textbackground(WHITE);
+    gotoxy(29, 3);
+    cprintf ("Transaction in Account");
+    textcolor(LIGHTGRAY);
+    textbackground(BLACK);
+    int d1, m1, y1;
+    struct date d;
+    getdate(&d);
+    d1 = d.da_day;
+    m1 = d.da_mon;
+    y1 = d.da_year;
+    gotoxy(5, 6);
+    cout << "Date: " << d1 << "/" << m1 << "/" << y1;
+    gotoxy(5, 8);
+    cout << "Accnount no. " << t_accno;
+    char t_name[30];
+    char t_address[30];
+    float t_balance;
+    strcpy(t_name, ini.return_name(t_accno));
+    strcpy(t_address, ini.return_address(t_accno));
+    t_balance = ini.give_balance(t_accno);
+    gotoxy(27, 11);
+    cout << "Name : " << t_name;
+    gotoxy(27, 12);
+    cout << "Address : " << t_address;
+    gotoxy(5, 15);
+    cout<<"Last balance Rs. "<< setw(15)<< setprecision(2)
+	<<setiosflags(ios::left)<<setiosflags(ios::showpoint)
+	<<setiosflags(ios::fixed)<<t_balance;
+    char t_tran, t_type[10], tm[10];
+    float t_amount, t_amt;
+    do
+    {
+     clear(5, 10);
+     valid = 1;
+     gotoxy(5, 10);
+     cout << "Deposit or Withdraw (D/W) : ";
+     t_tran = getch();
+     if (t_tran == '0')
+     return;
+     t_tran = toupper(t_tran);
+     }while (t_tran != 'D' && t_tran != 'W');
+    do
+    {
+     clear(5, 19);
+     clear(5, 23);
+     gotoxy(5, 23);
+     cout << "Enter Transaction by Cash or Cheque ";
+     valid = 1;
+     gotoxy(5, 19);
+     cout << "Cash/cheque:";
+	gets(t_type);
+     strupr(t_type);
+     if (t_type[0] == '0')
+     return;
+     if (strcmp(t_type, "CASH") && strcmp(t_type, "CHEQUE"))
+     {
+      valid = 0;
+      gotoxy(5, 23);
+      cprintf("\7Enter correctly");
+      getch();
+      }
+     }while (!valid);
+    do
+    {
+     clear(5, 21);
+     clear(5, 23);
+     gotoxy(5, 23);
+     cout << "Enter Amount for Transaction ";
+     valid = 1;
+     gotoxy(5, 21);
+     cout << "Amount Rs. ";
+     gets(tm);
+     t_amt = atof(tm);
+     t_amount = t_amt;
+     if (tm[0] == '0')
+     return;
+     if ((t_tran == 'W' && t_amount > t_balance) || (t_amount < 1))
+     {
+      valid = 0;
+      gotoxy(5, 23);
+      cprintf("\7Invalid Data entered");
+      getch();
+      }
+     }while (!valid);
+    char ch;
+    clear(5, 23);
+    do
+    {
+     clear(20, 23);
+     valid = 1;
+     gotoxy(40, 20);
+     cout << "Save Transaction <Y/N> : ";
+     ch = getche();
+     if (ch == '0')
+     return;
+     ch = toupper(ch);
+     }while (ch != 'N' && ch != 'Y');
+    if (ch == 'N')
+    return;
+    float t_interest;
+    t_interest = calculate_interest(t_accno, t_balance);
+    if (t_tran == 'D')
+    t_balance = t_balance + t_amount + t_interest;
+    else
+    t_balance = (t_balance - t_amount) + t_interest;
+    // Modified records are updated in data bases.
+    ini.update_balance(t_accno, t_name, t_address, t_balance);
+    add_to_file(t_accno,d1,m1,y1,t_tran,t_type,t_interest,t_amount,t_balance);
+}
+
+/* Function for closing any account after inputing account number. */
+void account::close_account(void)
+{
+    clrscr();
+    char t_acc[10];
+    int t, t_accno;
+    gotoxy(71, 1);
+    cout << "<0>=Exit";
+    gotoxy(5, 5);
+    cout << "Enter the account no. ";
+    gets(t_acc);
+    t = atoi(t_acc);
+    t_accno = t;
+    if (t_accno == 0)
+    return;
+    clrscr();
+    initial ini;
+    if (!ini.found_account(t_accno))
+    {
+     gotoxy(5, 5);
+     cout << "\7Account not found ";
+     getch();
+     return;
+     }
+    gotoxy(71, 1);
+    cout << "<0>=Exit";
+    gotoxy(3, 3);
+    textbackground(WHITE);
+    for (int i = 1; i <= 76; i++)
+    cprintf(" ");
+    textbackground(BLACK);
+    textcolor(BLACK+BLINK);
+    textbackground(WHITE);
+    gotoxy(30, 3);
+    cprintf("Close account screen");
+    textcolor(LIGHTGRAY);
+    textbackground(BLACK);
+    int d1, m1, y1;
+    struct date d;
+    getdate(&d);
+    d1 = d.da_day;
+    m1 = d.da_mon;
+    y1 = d.da_year;
+    gotoxy(5, 6);
+    cout << "Date: " << d1 << "/" << m1 << "/" << y1;
+    char ch;
+    ini. display(t_accno);
+    do
+    {
+     clear(5, 15);
+     gotoxy(5, 15);
+     cout << "Close this account <y/n> ";
+     ch = getche();
+     if (ch == '0')
+     return;
+     ch = toupper(ch);
+     }while (ch != 'N' && ch != 'Y');
+    if (ch == 'N')
+    return;
+    // Function calls to delete the existing account no.
+    ini.delete_account(t_accno);
+    delete_account(t_accno);
+    gotoxy(5, 20);
+    cout << "\7Account Deleted";
+    gotoxy(5, 23);
+    cout << "Press any key to continue...";
+    getch();
+}
+
+// Main program logic which control the class members and member functions.
+void main(void)
+{
+    main_menu  m_menu;
+    int gdriver = DETECT, gmode, errorcode;
+    initgraph(&gdriver, &gmode, "c:\\tc\\bgi");
+    m_menu.help();
+    closegraph();
+    m_menu.control_menu();
+}
+
