@@ -112,6 +112,7 @@ int main()
     Circular_Queue cq;
     do
     {
+	cout<<"Circular Queue Menu\n";
         cout<<"1.Insert\n";
         cout<<"2.Delete\n";
         cout<<"3.Display\n";
