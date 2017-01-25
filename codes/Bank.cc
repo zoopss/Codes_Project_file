@@ -474,4 +474,921 @@ void initial::modify(void)
 {
       clrscr();
       int j;
-      char t_acc[10
+      char t_acc[10    
+	int t, t_accno;
+      gotoxy(17, 1);
+      cout << "<0>=Exit";
+      gotoxy(5,5);
+      cout << "Enter the account no. ";
+      gets(t_acc);
+      t = atoi(t_acc);
+      t_accno = t;
+      if (t_accno == 0)
+      return;
+      clrscr();
+      if (!found_account(t_accno))
+      {
+       gotoxy(5, 5);
+       cout << "\7Account not found";
+       getch();
+       return;
+       }
+      gotoxy(71, 1);
+      cout << "<0>=Exit";
+      textbackground(WHITE);
+      gotoxy(3, 3);
+      for (j = 1; j<= 76; j++)
+      cprintf(" ");
+      textbackground(BLACK);
+      textcolor(BLACK+BLINK);
+      textbackground(WHITE);
+      gotoxy(30, 3);
+      cprintf("Modify Account Screen");
+      textcolor(LIGHTGRAY);
+      textbackground(BLACK);
+      int d1, m1, y1;
+      struct date d;          // For extracting system date
+      getdate(&d);
+      d1 = d.da_day;
+      m1 = d.da_mon;
+      y1 = d.da_year;
+      gotoxy(4, 2);
+      cout << "Date: " << d1 << "/" << m1 << "/" << y1;
+      char ch;
+      display(t_accno);
+      account a;
+      do
+      {
+       a.clear(5, 13);
+       gotoxy(5, 13);
+       cout << "Modify this account <y/n>: ";
+       ch = getche();
+       if (ch == '0')
+       return;
+       ch = toupper(ch);
+       }while (ch != 'N' && ch != 'Y');
+      if (ch == 'N')
+      return;
+      int modified = 0, valid;
+      char t_name[30], t_address[30];
+      gotoxy(5, 15);
+      cout << "Name : ";
+      gotoxy(5, 16);
+      cout << "Address : ";
+      do
+      {
+       a.clear(15, 15);
+       a.clear(5, 23);
+       gotoxy(5, 23);
+       cout << "Enter Name or Press Enter for No Change";
+       valid = 1;
+       gotoxy(15, 15);
+       gets(t_name);
+       strupr(t_name);
+       if (t_name[0] == '0')
+       return;
+       if (strlen(t_name) > 25)
+       {
+	valid = 0;
+	gotoxy(5, 23);
+	cprintf("\7Name should not greater than 25");
+	getch();
+	}
+       } while (!valid);
+      do
+      {
+       a.clear(15, 16);
+       a.clear(5, 23);
+       gotoxy(5, 23);
+       cout << "Enter Address or press enter for no Change";
+       valid = 1;
+       gotoxy(15, 16);
+       gets(t_address);
+       strupr(t_address);
+       if (t_address[0] == '0')
+       return;
+       if (strlen(t_address) > 25)
+       {
+	valid = 0;
+	gotoxy(5, 23);
+	cprintf("\7Address should not greater than 25");
+	getch();
+	}
+       }while (!valid);
+      if (strlen(t_address) > 0)
+      modified = 1;
+      if (!modified)
+      return;
+      // clears the screen at 23rd row and from 5th column
+      a.clear(5,23);
+      do
+      {
+       a.clear(5, 23);
+       gotoxy(5, 18);
+       cout << "Do you want to save Changes <Y/N>: ";
+       ch = getche();
+       if (ch == '0')
+       return;
+       ch = toupper(ch);
+       }while (ch != 'N' && ch != 'Y');
+      if (ch == 'N')
+      return;
+      // Passes the parameter to add in data file
+      modify_account(t_accno, t_name, t_address);
+      gotoxy(5, 21);
+      cout << "\7Record modified";
+      gotoxy(5, 23);
+      cout << "Press any key to continue...";
+      getch();
+}
+
+/* Function for displaying an account when modified */
+void initial::display(int t_accno)
+{
+      fstream file;
+      file.open("INITIAL.dat", ios::in);
+      file.seekg(0, ios::beg);
+      // Displays the record contents matching with t_accno from
+      // INITIAL.dat data file
+      while (file.read((char *)this, sizeof(initial)))
+      {
+       if (t_accno == accno)
+       {
+	gotoxy(8, 5);
+	cout << "Account no. " << accno;
+	gotoxy(10, 8);
+	cout << "Name : ";
+	puts(name);
+	gotoxy(10, 9);
+	cout << "Address : ";
+	puts(address);
+	gotoxy(10, 10);
+	cout << "Balance : " << setw(15)    // setwidth
+	<< setprecision(2)    // set position of decimal point
+	<< setiosflags(ios::left)   // set left justified output
+	<< setiosflags(ios::showpoint)  // always show decimal point
+	<< setiosflags(ios::fixed)<< balance;// set fixed notation for display
+	break;
+	}
+       }
+      file.close();
+}
+
+/* Function for updating the modified account into INITIAL.dat file */
+void initial::modify_account(int t_accno,char t_name[30],char t_address[30])
+{
+     int recno;
+     recno = recordno(t_accno);
+     fstream file;
+     file.open("INITIAL.dat", ios::out|ios::ate);
+     strcpy(name, t_name);
+     strcpy(address, t_address);
+     int location;
+     // finds the position in data file
+     location = (recno-1) * sizeof(initial);
+     file.seekp(location);
+     // Overwrites the modified record into INITIAL.dat data file
+     file.write((char *)this, sizeof(initial));
+     file.close();
+     return;
+}
+
+/* Function to find the last account number */
+int initial::last_accno(void)
+{
+     fstream file;
+     file.open("INITIAL.dat", ios::in);
+     file.seekg(0, ios::beg);
+     int count = 0;
+     // Founds the last account no.
+     while (file.read((char *)this, sizeof(initial)))
+     count = accno;
+     file.close();
+     return count;
+}
+
+//This function add_to_file() is used to create new/fresh record in data file
+void initial::add_to_file(int t_accno,char t_name[30],char t_address[30],float t_balance)
+{
+     accno = t_accno;
+     strcpy(name, t_name);
+     strcpy(address, t_address);
+     balance = t_balance;
+     fstream file;
+     // Appends new account record with the balance into INITIAL.dat data file
+     file.open("INITIAL.dat", ios::out|ios::app);
+     file.write((char *)this, sizeof(initial));
+     file.close();
+}
+
+// Function for deleting a account from INITIAL.dat file
+void initial::delete_account(int t_accno)
+{
+     fstream file;
+     file.open("INITIAL.dat", ios::in);
+     fstream temp;
+     temp.open("TEMP.dat", ios::out);
+     file.seekg(0,ios::beg);
+     // Uses a copy method to delete the account from INTITAL.dat data file
+     while (!file.eof())
+     {
+      file.read((char *)this, sizeof(initial));
+      if (file.eof())
+      break;
+      if (accno != t_accno)
+      temp.write((char *)this, sizeof(initial));
+      }
+     file.close();
+     temp.close();
+     file.open("INITIAL.dat", ios::out);
+     temp.open("TEMP.dat", ios::in);
+     temp.seekg(0, ios::beg);
+     // Copy the TEMP.dat contents into INTITAL.dat data file
+     while (!temp.eof())
+     {
+      temp.read((char *)this, sizeof(initial));
+      if (temp.eof())
+      break;
+      if (accno != t_accno)
+      file.write((char *)this, sizeof(initial));
+      }
+     file.close();
+     temp.close();
+}
+
+// Function for adding account details of daily tranaction into BANKING.dat file
+
+void account::add_to_file(int t_accno,int d1,int m1,int y1,char t_tran,char t_type[10],float t_interest,float t_amount,float t_balance)
+{
+     fstream file;
+     file.open("BANKING.dat", ios::app);
+     accno = t_accno;
+     getch();
+     dd = d1;
+     mm = m1;
+     yy = y1;
+     tran = t_tran;
+     strcpy(type, t_type);
+     interest = t_interest;
+     amount = t_amount;
+     balance = t_balance;
+     // Appends the transaction record into BANKING.dat data file
+     file.write((char *)this, sizeof(account));
+     file.close();
+}
+
+/* Function for deleting an account from BANKING.dat file. */
+void account::delete_account(int t_accno)
+{
+     fstream file;
+     file.open("BANKING.dat", ios::in); // Open to read records
+     fstream temp;
+     temp.open("TEMP.dat", ios::out); // Open to write records
+     file.seekg(0, ios::beg);        // Positioned from begining of the file
+     // Uses the copy method for deleting the transaction record from
+     // BANKING.dat data file
+     while (!file.eof())
+     {
+      file.read((char *)this, sizeof(account));
+      if (file.eof())
+      break;
+      if (accno != t_accno)
+      temp.write((char *)this, sizeof(account));
+      }
+     file.close();
+     temp.close();
+     file.open("BANKING.dat", ios::out);
+     temp.open("TEMP.dat", ios::in);
+     temp.seekg(0, ios::beg);
+     // Uses copy method to transfer the record from TEMP.dat file to
+     // BANKING.dat data file
+     while (!temp.eof())
+     {
+      temp.read((char *)this,	sizeof(account));
+      }
+      file.close();
+      temp.close();
+}
+
+/* Function for displaying an account from "INITIAL.dat". */
+void initial::display_list(void)
+{
+     clrscr();
+     int flag;
+     float t_bal = 0.0;
+     fstream file;
+     gotoxy(25,2);
+     cout << "Accounts List in Bank";
+     gotoxy(25, 3);
+     cout << "=====================";
+     int d1, m1, y1;
+     struct date d;          // For extracting system date
+     getdate(&d);
+     d1 = d.da_day;
+     m1 = d.da_mon;
+     y1 = d.da_year;
+     gotoxy(62, 3);
+     cout << "Date: " << d1 << "/" << m1 << "/" << y1;
+     gotoxy(1, 4);
+     for (int j = 1; j <= 79; j++)
+     cout << "=";
+     gotoxy(1, 5);
+     cout << "Accno#";
+     gotoxy(10,5);
+     cout << "Name";
+     gotoxy(30,5);
+     cout << "Address";
+     gotoxy(65,5);
+     cout << "Balance";
+     gotoxy(1, 6);
+     for (j = 1; j <= 79; j++)
+     cout << "=";
+     file.open("INITIAL.dat", ios::in);
+     file.seekg(0,ios::beg);
+     int row = 7;
+     // Reads all the records to display on the screen
+     while (file.read((char *)this, sizeof(initial)))
+     {
+      flag = 0;
+      delay(2);
+      gotoxy(3, row);
+      cout << accno;
+      gotoxy(10, row);
+      puts(name);
+      gotoxy(30, row);
+      puts(address);
+      gotoxy(65, row);
+      cout <<setw(15)<<setprecision(2)<<setiosflags(ios::left)
+	   <<setiosflags(ios::showpoint)<<setiosflags(ios::fixed)<<balance;
+      t_bal = t_bal + balance;
+      row++;
+      if (row > 23)
+      {
+       flag = 1;
+       row = 6;
+       gotoxy(4, 24);
+       cout << "Press any key to continue.... ";
+       getch();
+       clrscr();
+      }
+     }
+    gotoxy(1, row);
+    for (j = 1; j <= 79; j++)
+    cout << "=";
+    row++;
+    gotoxy(3, row);
+    cout << "Total Balance in Bank is : ";
+    gotoxy(65, row);
+    cout <<setw(15)<<setprecision(2)<<setiosflags(ios::left)
+	 <<setiosflags(ios::showpoint)<<setiosflags(ios::fixed)<<t_bal;
+    file.close();
+    if (!flag)
+    {
+     gotoxy(4, 24);
+     cout << "Press any key to continue...";
+     getch();
+     }
+}
+
+/* Function for clearing specified row and column. */
+void account::clear(int col, int row)
+{
+    for (int j = col; j <= 79; j++)
+    {
+     gotoxy(j, row);
+     cout << " ";
+     }
+}
+
+/* Function to found an account for display account function. */
+int initial::found_account(int t_accno)
+{
+     fstream file;
+     file.open("INITIAL.dat", ios::in);
+     file.seekg(0, ios::beg);
+     int found = 0;
+     // Searches the specified record in INITIAL.dat data file
+     while (file.read((char *)this, sizeof(initial)))
+     {
+      if (accno == t_accno)
+      {
+       found = 1;
+       break;
+       }
+      }
+     file.close();
+     return found;
+}
+
+/* Function for return name of the account holder from INITIAL.dat. */
+char *initial::return_name(int t_accno)
+{
+     fstream file;
+     file.open("INITIAL.dat", ios::in);
+     file.seekg(0, ios::beg);
+     char t_name[30];
+     // Return the name to display at report screen if found
+     while (file.read((char *)this, sizeof(initial)))
+     {
+      if (accno == t_accno)
+      {
+       strcpy(t_name, name);
+       break;
+       }
+      }
+     file.close();
+     return t_name;
+}
+
+/* Function for return address of the account holder from INITIAL.dat. */
+char *initial::return_address(int t_accno)
+{
+     fstream file;
+     file.open("INITIAL.dat", ios::in);
+     file.seekg(0, ios::beg);
+     char t_address[30];
+     // Return the address to display at report screen if found
+     while (file.read((char *)this, sizeof(initial)))
+     {
+      if (accno == t_accno)
+      {
+       strcpy(t_address, address);
+       break;
+       }
+      }
+     file.close();
+     return t_address;
+}
+
+/* Function for display account details */
+void account::box_for_display(int t_accno)
+{
+     int d1, m1, y1;
+     struct date d;
+	getdate(&d);
+     d1 = d.da_day;
+     m1 = d.da_mon;
+     y1 = d.da_year;
+     gotoxy(63, 2);
+     cout << "Date: " << d1 << "/" << m1 << "/" << y1;
+     gotoxy(4, 2);
+     cout << "Account No. " << t_accno;
+     initial ini;
+     char t_name[30];
+     strcpy(t_name, ini.return_name(t_accno));
+     char t_address[30];
+     strcpy(t_address, ini.return_address(t_accno));
+     gotoxy(25, 2);
+     cout << t_name;
+     gotoxy(25, 3);
+     cout << t_address;
+     gotoxy(4, 5);
+     cout << "Global Report of Account";
+     textbackground(WHITE);
+     textcolor(BLACK);
+     textbackground(WHITE);
+     gotoxy(1, 6);
+     for (int i = 1; i <=79; i++)
+     cout << "=";
+     gotoxy(4, 7);
+     cprintf("Date       Particular   Deposit      Withdraw                Balance");
+     gotoxy(1, 8);
+     for (i = 1; i <=79; i++)
+     cout << "=";
+     textcolor(LIGHTGRAY);
+     textbackground(BLACK);
+}
+
+/* Function for display an account from BANKING.dat file. */
+void account::display_account(void)
+{
+     clrscr();
+     char t_acc[10];
+     int j;
+     int tamt = 0, damt = 0, wamt = 0;
+     int t, t_accno;
+     gotoxy(71, 1);
+     cout << "<0>=Exit";
+     gotoxy(5, 5);
+     cout << "Enter account no. ";
+     gets(t_acc);
+     t = atoi(t_acc);
+     t_accno = t;
+     if (t_accno == 0)
+     return;
+     clrscr();
+     initial ini;
+     if (!ini.found_account(t_accno))
+     {
+      gotoxy(5, 5);
+      cout << "\7Account not found";
+      getch();
+      return;
+      }
+     // Display the heading from this function
+     box_for_display(t_accno);
+     int row = 9, flag;
+     fstream file;
+     file.open("BANKING.dat", ios::in);
+     while (file.read((char *)this, sizeof(account)))
+     {
+      if (accno == t_accno)
+      {
+       flag = 0;
+       delay(2);
+       gotoxy(4, row);
+       cout << dd << "-" << mm << "-" << yy;
+       gotoxy(16, row);
+       puts(type);
+       if (tran == 'D')
+       {
+	damt = damt + amount;
+	tamt = tamt + amount;
+	gotoxy(30, row);
+	}
+       else
+       {
+	wamt = wamt + amount;
+	tamt = tamt - amount;
+	gotoxy(42, row);
+	}
+       cout <<  setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	    << setiosflags(ios::showpoint)<< setiosflags(ios::fixed)<< amount;
+       gotoxy(66, row);
+       cout << setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	    << setiosflags(ios::showpoint)<< setiosflags(ios::fixed)<<balance;
+       row++;
+       if (row > 23)
+       {
+	flag = 1;
+	row = 7;
+	gotoxy(4, 24);
+	cout << "Press any key to continue";
+	getch();
+	clrscr();
+	box_for_display(t_accno);
+	}
+       }
+      }
+     file.close();
+     gotoxy(1, row);
+     for (j = 1; j <= 79; j++)
+     cout << "=";
+     row++;
+     gotoxy(4, row);
+     cout << "Total-->:";
+     gotoxy(30, row);
+     cout << setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	  << setiosflags(ios::showpoint)<< setiosflags(ios::fixed)<< damt;
+     gotoxy(42, row);
+     cout << setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	  << setiosflags(ios::showpoint)<< setiosflags(ios::fixed)<< wamt;
+     gotoxy(66, row);
+     cout << setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	  << setiosflags(ios::showpoint)<< setiosflags(ios::fixed)<< tamt;
+     if (!flag)
+     {
+      gotoxy(4, 24);
+      cout << "Press any key to continue...";
+      getch();
+      }
+}
+
+/* Function to list monthWise transaction report. */
+void account::month_report(void)
+{
+    int dd1, mm1, yy1;
+    clrscr();
+    gotoxy(10, 5);
+    cout << "Enter any date of a month ";
+    gotoxy(38, 5);
+    cin >> dd1;
+    gotoxy(40, 5);
+    cout << "-";
+    gotoxy(41, 5);
+    cin >> mm1;
+    gotoxy(43, 5);
+    cout << "-";
+    gotoxy(44, 5);
+    cin >> yy1;
+    clrscr();
+    char t_acc[10];
+    int j;
+    int tamt = 0, damt = 0, wamt = 0;
+    int t, t_accno;
+    gotoxy(71, 1);
+    cout << "<0>=Exit";
+    gotoxy(5, 5);
+    cout << "Enter account no. ";
+    gets(t_acc);
+    t = atoi(t_acc);
+    t_accno = t;
+    if (t_accno == 0)
+    return;
+   clrscr();
+    initial ini;
+    if (!ini.found_account(t_accno))
+    {
+     gotoxy(5, 5);
+     cout << "\7Account not found";
+     getch();
+     return;
+     }
+    box_for_display(t_accno);
+    gotoxy(4, 5);
+    cout << "Statement Month: " << dd1 << "/" << mm1 << "/" << yy1;
+    getch();
+    int row = 9, flag;
+    fstream file;
+    file.open("BANKING.dat", ios::in);
+    float pre_balance = 0.0; // Previous balance amount
+    // The loop finds the last months balance
+    while (file.read((char *)this, sizeof(account)))
+    {
+    //Checks the account no. and till the previous month and till current year
+     if((accno == t_accno) && ((mm < mm1 && yy <= yy1) || (mm1 < mm && yy < yy1)))
+     {
+      pre_balance = balance;
+      }
+     }
+     file.close();
+     file.open("BANKING.dat", ios::in);
+     gotoxy(54, row);
+     cout<<"B/F ....    " <<setw(15)<<setprecision(2)<<setiosflags(ios::left)
+	 <<setiosflags(ios::showpoint)<<setiosflags(ios::fixed)<<pre_balance;
+     row++;
+     // The loop displays the current months transaction after previous month
+     while (file.read((char *)this, sizeof(account)))
+     {
+      if ((accno == t_accno) && (mm1 == mm && yy1 <= yy))
+      {
+       flag = 0;
+       delay(2);
+       gotoxy(4, row);
+       cout << dd << "-" << mm << "-" << yy;
+       gotoxy(16, row);
+       puts(type);
+       if (tran == 'D')
+       {
+	damt = damt + amount;
+	tamt = tamt + amount;
+	gotoxy(30, row);
+	}
+       else
+       {
+	wamt = wamt + amount;
+	tamt = tamt - amount;
+	gotoxy(42, row);
+	}
+       cout <<setw(15)<<setprecision(2)<<setiosflags(ios::left)
+	    <<setiosflags(ios::showpoint)<<setiosflags(ios::fixed)<<amount;
+       gotoxy(66, row);
+       cout <<setw(15)<<setprecision(2)<<setiosflags(ios::left)
+	    <<setiosflags(ios::showpoint)<<setiosflags(ios::fixed)<<balance;
+       row++;
+       // If row increases 23 then the next screen continues
+       if (row > 23)
+       {
+	flag = 1;
+	row = 7;
+	gotoxy(4, 24);
+	cout << "Press any key to continue";
+	getch();
+	clrscr();
+	box_for_display(t_accno);
+	}
+       }
+      }
+     file.close();
+     gotoxy(1, row);
+     for (j = 1; j <= 79; j++)
+     cout << "=";
+     row++;
+     gotoxy(4, row);
+     cout << "Total-->:";
+     gotoxy(30, row);
+     // Deposited amount
+     cout << setw(15)                   // setwidth
+	  << setprecision(2)            // set position of decimal point
+	  << setiosflags(ios::left)     // set left justified output
+	  << setiosflags(ios::showpoint)// always show decimal point
+	  << setiosflags(ios::fixed)    // set fixed notation for display
+	  << damt;
+     gotoxy(42, row);
+     // Withdraw amount
+     cout << setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	  << setiosflags(ios::showpoint)<<setiosflags(ios::fixed)<< wamt;
+     gotoxy(66, row);
+     tamt = tamt + pre_balance;
+     // Balance amount
+     cout << setw(15)<< setprecision(2)<< setiosflags(ios::left)
+	  << setiosflags(ios::showpoint)<< setiosflags(ios::fixed)<< tamt;
+     if (!flag)
+     {
+      gotoxy(4, 24);
+      cout << "Press any key to continue...";
+      getch();
+      }
+ }
+
+/* Function for creating new account for new customer. */
+void account::new_account(void)
+{
+    char ch;
+    int i, valid;
+    clrscr();
+    initial ini;
+    shape s;
+    s.box(2, 1, 79, 25, 218);
+    s.box(25, 2, 54, 4, 219);
+    gotoxy(65, 2);
+    cout << "<0>=Exit";
+    gotoxy(3,3);
+    for (i = 1; i<= 76; i++)
+    cprintf(" ");
+    textbackground(BLACK);
+    textcolor(BLACK+BLINK);
+    textbackground(WHITE);
+    gotoxy(30, 3);
+    cprintf("Open New Account");
+    textcolor(LIGHTGRAY);
+    textbackground(BLACK);
+    int d1, m1, y1;
+    struct date d;          // For extracting system date
+    getdate(&d);
+    d1 = d.da_day;
+    m1 = d.da_mon;
+    y1 = d.da_year;
+    int t_accno;
+    t_accno = ini.last_accno();
+    t_accno++;
+    //Appends and deletes false record to create primary position in data files
+    if (t_accno == 1)
+    {
+     ini.add_to_file(t_accno, "abc", "xyz", 1.1);
+     ini.delete_account(t_accno);
+     cout << "Press xxxxxxx";
+     getch();
+     add_to_file(t_accno, 1, 1, 1997, 'D', "INITIAL", 1.1, 1.1, 1.1);
+     delete_account(t_accno);
+     }
+    char t_name[30], t[10], t_address[30];
+    float t_bal = 0.0, t_balance = 0.0;
+    gotoxy(5, 6);
+    cout << "Date: " << d1 << '/' << m1 << '/' << y1;
+    gotoxy(5, 8);
+    cout << "Account No # " << t_accno;
+    gotoxy(5, 10);
+    cout << "Name : ";
+    gotoxy(5, 11);
+    cout << "Address : ";
+    gotoxy(5, 12);
+    cout << "Name of verifying Person : ";
+    gotoxy(5, 14);
+    cout << "Initial Deposit : ";
+    do
+    {
+     clear(15, 10);
+     clear(5, 23);
+     gotoxy(5, 23);
+     cout << "Enter Name of the Person";
+     valid = 1;
+     gotoxy(15, 10);
+     gets(t_name);
+     strupr(t_name);
+     if (t_name[0] == '0')
+     return;
+     if (strlen(t_name) == 0 || strlen(t_name) > 25)
+     {
+      valid = 0;
+      gotoxy(5, 23);
+      cprintf("\7Name should not greater than 25");
+      getch();
+      }
+     }while (!valid);
+    do
+    {
+     clear(25, 15);
+     clear(5, 23);
+     gotoxy(5, 23);
+     cout << "Enter Address of the Person ";
+     valid = 1;
+     gotoxy(15, 11);
+     gets(t_address);
+     strupr(t_address);
+     if (t_address[0] == '0')
+     return;
+     if (strlen(t_address) == 0 || strlen(t_address) > 25)
+     {
+      valid = 0;
+      gotoxy(5, 23);
+      cprintf("\7Address should not greater than 25");
+      getch();
+      }
+     }while (!valid);
+    do
+    {
+     char vari[30];
+     clear(13, 12);
+     clear(5, 23);
+     gotoxy(5, 23);
+     cout << "Enter name of the verifying Person ";
+     valid = 1;
+     gotoxy(31, 12);
+     gets(vari);
+     strupr(vari);
+     if (vari[0] == '0')
+     return;
+     if (strlen(vari) == 0 || strlen(vari) > 25)
+     {
+      valid = 0;
+      gotoxy(5, 23);
+      cprintf("Should not blank or greater than 25");
+      getch();
+      }
+     }while (!valid);
+    do
+    {
+     clear(13, 12);
+     clear(5, 23);
+     gotoxy(5, 23);
+     cout << "Enter initial amount to be deposit ";
+     valid = 1;
+     gotoxy(23, 14);
+     gets(t);
+     t_bal = atof(t);
+     t_balance = t_bal;
+     if (t[0] == '0')
+     {
+      valid = 0;
+      gotoxy(5, 23);
+      cprintf("\7Should not less than 500");
+      getch();
+      }
+     }while (!valid);
+    clear(5, 23);
+    do
+    {
+     clear(5, 17);
+     valid = 1;
+     gotoxy(5, 17);
+     cout << "Do you want to save the record <Y/N>: ";
+     ch = getche();
+     if (ch == '0')
+     return;
+     ch = toupper(ch);
+     }while (ch != 'N' && ch != 'Y');
+    if (ch == 'N')
+    return;
+    float t_amount, t_interest;
+    t_amount = t_balance;
+    t_interest = 0.0;
+    char t_tran, t_type[10];
+    t_tran = 'D';
+    strcpy(t_type, "INITIAL");
+    //Appends records contents into both INITIAL.dat and BANKING.dat data files
+    ini.add_to_file(t_accno, t_name, t_address, t_balance);
+    add_to_file(t_accno, d1, m1, y1, t_tran, t_type, t_interest, t_amount, t_balance);
+}
+
+/* Function for returning balance amount of an account. */
+float initial::give_balance(int t_accno)
+{
+    fstream file;
+    file.open("INITIAL.dat", ios::in);
+    file.seekg(0, ios::beg);
+    float t_balance;
+    // Gives the last balance of an individual account
+    while (file.read((char *)this, sizeof(initial)))
+    {
+     if (accno == t_accno)
+     {
+      t_balance = balance;
+      break;
+      }
+     }
+    file.close();
+    return t_balance;
+}
+
+/* Function for returning the record no. for updating balance */
+int initial::recordno(int t_accno)
+{
+    fstream file;
+    file.open("INITIAL.dat", ios::in);
+    file.seekg(0, ios::beg);
+    int count = 0;
+
+    // Finds the record position in INITIAL.dat data file
+    while (file.read((char *)this, sizeof(initial)))
+    {
+     count++;
+     if (t_accno == accno)
+     break;
+     }
+    file.close();
+    return count;
+}
+
+/* Function for updating the balance for the given account no.*/
+		
