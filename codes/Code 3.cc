@@ -29,7 +29,7 @@ int remove()
     int x;
     if(front == NULL)
     {
-        cout<<"empty queuen";
+        cout<<"empty queue";
     }
     else
     {
@@ -43,16 +43,16 @@ int remove()
 int main()
 {
     int n,c = 0,x;
-    cout<<"Enter the number of values to be pushed into queuen";
+    cout<<"Enter the number of values to be pushed into queue....";
     cin>>n;
     while (c < n)
     {
-    cout<<"Enter the value to be entered into queuen";
+    cout<<"Enter the value to be entered into queue.....";
     cin>>x;
         push(x);
         c++;
      }
-     cout<<"nnRemoved Valuesnn";
+     cout<<"nnRemoved Values....";
      while(true)
      {
         if (front != NULL)
